@@ -29,7 +29,7 @@ BEGIN
     IF @i_statusModificationDate IS NULL
         SET @i_statusModificationDate = GETDATE();
 
-    -- INSERTAR STATUS --
+    -- INSERTAR ESTADO --
     IF @w_Accion = 'I'
     BEGIN
         IF ISNULL(@i_statusName,'') = ''
@@ -37,23 +37,59 @@ BEGIN
             SET @o_Numero = 400;
             SET @o_MensajeUsuario = 'EL NOMBRE DEL ESTADO ES OBLIGATORIO';
         END;
+        ELSE IF ISNULL(@i_statusCreatorId,0) = 0
+        BEGIN
+            SET @o_Numero = 400;
+            SET @o_MensajeUsuario = 'EL ID DEL CREADOR ES OBLIGATORIO';
+        END;
+        ELSE IF EXISTS (SELECT 1 FROM [SQM_CATALOGS].[TBL_Status] (NOLOCK) WHERE statusName = @i_statusName)
+        BEGIN
+            SET @o_Numero = 400;
+            SET @o_MensajeUsuario = 'EL NOMBRE DEL ESTADO YA EXISTE';
+        END;
 
         ELSE
         BEGIN
-            INSERT INTO [SQM_CATALOGS].[TBL_Status] (statusName,statusCreationDate,statusCreatorId,statusModificationDate,statusModificatorId,statusEnable)
-            VALUES(@i_statusName,@i_statusCreationDate,@i_statusCreatorId,@i_statusModificationDate,@i_statusModificatorId,@i_statusEnable);
-            SET @o_Numero = 201;
-            SET @o_MensajeUsuario = 'ESTADO CREADO EXITOSAMENTE';
-        END;
-    END;
+            BEGIN TRANSACTION TRX_INS_STATUS;
 
-    -- UPDATE STATUS --
+            BEGIN TRY
+
+                INSERT INTO [SQM_CATALOGS].[TBL_Status](statusName,statusCreationDate,statusCreatorId,statusModificationDate,statusEnable)
+                VALUES(@i_statusName,@i_statusCreationDate,@i_statusCreatorId,@i_statusModificationDate,1);
+
+                COMMIT TRANSACTION TRX_INS_STATUS;
+
+                SET @o_Numero = 201;
+                SET @o_MensajeUsuario = 'ESTADO REGISTRADO CORRECTAMENTE';
+
+            END TRY
+
+            BEGIN CATCH
+
+                IF @@TRANCOUNT > 0
+                    ROLLBACK TRANSACTION TRX_INS_STATUS;
+
+                SET @o_Numero = 500;
+                SET @o_MensajeUsuario = 'ERROR AL REGISTRAR ESTADO';
+                SET @o_MensajeTecnico = CONCAT_WS(' - ', 'ERROR AL REGISTRAR ESTADO', ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE());
+
+            END CATCH
+        END
+    END
+
+    -- UPDATE ESTADO --
     ELSE IF @w_Accion = 'U'
     BEGIN
         IF ISNULL(@i_statusId,0) = 0
         BEGIN
             SET @o_Numero = 400;
             SET @o_MensajeUsuario = 'EL ID DEL ESTADO ES OBLIGATORIO';
+        END;
+        
+        ELSE IF ISNULL(@i_statusModificatorId,0) = 0
+        BEGIN
+            SET @o_Numero = 400;
+            SET @o_MensajeUsuario = 'EL ID DEL MODIFICADOR ES OBLIGATORIO';
         END;
 
         ELSE IF NOT EXISTS (SELECT 1 FROM [SQM_CATALOGS].[TBL_Status] (NOLOCK) WHERE statusId = @i_statusId)
@@ -62,75 +98,114 @@ BEGIN
             SET @o_MensajeUsuario = 'EL ESTADO NO EXISTE';
         END;
 
-        ELSE IF ISNULL(@i_statusName,'') = ''
-        BEGIN
-            SET @o_Numero = 400;
-            SET @o_MensajeUsuario = 'EL NOMBRE DEL ESTADO ES OBLIGATORIO';
-        END;
-
-        ELSE IF ISNULL(@i_statusModificatorId,0) = 0
-        BEGIN
-            SET @o_Numero = 400;
-            SET @o_MensajeUsuario = 'EL ID DEL MODIFICADOR ES OBLIGATORIO';
-        END;
-
         ELSE IF NOT EXISTS (SELECT 1 FROM [SQM_SECURITY].[TBL_Users] (NOLOCK) WHERE userId = @i_statusModificatorId AND userEnable = 1)
         BEGIN
             SET @o_Numero = 404;
-            SET @o_MensajeUsuario = 'EL MODIFICADOR NO EXISTE O NO ESTA HABILITADO';
+            SET @o_MensajeUsuario = 'EL USUARIO MODIFICADOR NO EXISTE';
+        END;
+
+        ELSE IF @i_statusName IS NOT NULL AND @i_statusName = ''
+        BEGIN
+            SET @o_Numero = 400;
+            SET @o_MensajeUsuario = 'EL NOMBRE DEL ESTADO NO PUEDE ESTAR VACIO';
+        END;
+
+        ELSE IF @i_statusName IS NOT NULL AND
+            EXISTS (SELECT 1 FROM [SQM_CATALOGS].[TBL_Status] (NOLOCK) WHERE statusName = @i_statusName
+        AND statusId <> @i_statusId)
+        BEGIN
+            SET @o_Numero = 400;
+            SET @o_MensajeUsuario = 'EL NOMBRE DEL ESTADO YA EXISTE';
         END;
 
         ELSE
         BEGIN
-            UPDATE [SQM_CATALOGS].[TBL_Status]
-            SET statusName = @i_statusName,
-                statusModificationDate = @i_statusModificationDate,
-                statusModificatorId = @i_statusModificatorId,
-                statusEnable = @i_statusEnable
-            WHERE statusId = @i_statusId;
+            BEGIN TRANSACTION TRX_UPD_STATUS;
 
-            SET @o_Numero = 200;
-            SET @o_MensajeUsuario = 'ESTADO ACTUALIZADO EXITOSAMENTE';
-        END;
-    END;
+            BEGIN TRY
 
-    -- SELECT STATUS --
+                UPDATE [SQM_CATALOGS].[TBL_Status]
+                SET statusName = COALESCE(@i_statusName,statusName),
+                    statusModificationDate = @i_statusModificationDate,
+                    statusModificatorId = @i_statusModificatorId,
+                    statusEnable = COALESCE(@i_statusEnable,statusEnable)
+                WHERE statusId = @i_statusId;
+
+                COMMIT TRANSACTION TRX_UPD_STATUS;
+
+                SET @o_Numero = 200;
+                SET @o_MensajeUsuario = 'ESTADO ACTUALIZADO CORRECTAMENTE';
+
+            END TRY
+
+            BEGIN CATCH
+
+                IF @@TRANCOUNT > 0
+                    ROLLBACK TRANSACTION TRX_UPD_STATUS;
+
+                SET @o_Numero = 500;
+                SET @o_MensajeUsuario = 'ERROR AL ACTUALIZAR ESTADO';
+                SET @o_MensajeTecnico = CONCAT_WS(' - ', 'ERROR AL ACTUALIZAR ESTADO', ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE());
+
+            END CATCH
+        END
+    END
+
+    -- SELECT ESTADO --
     ELSE IF @w_Accion = 'S'
     BEGIN
         BEGIN TRY
 
-        SELECT statusId,statusName,statusCreationDate,statusCreatorId,statusModificationDate,statusModificatorId,statusEnable
-        FROM [SQM_CATALOGS].[TBL_Status] (NOLOCK)
-        ORDER BY statusId
-        OFFSET (@i_PageNumber - 1) * @i_RowsPerPage ROWS
-        FETCH NEXT @i_RowsPerPage ROWS ONLY;
+            IF ISNULL(@i_PageNumber,0) < 1
+                SET @i_PageNumber = 1;
 
-        SET @w_totalRows = @@ROWCOUNT;
+            IF ISNULL(@i_RowsPerPage,0) < 1
+                SET @i_RowsPerPage = 10;
 
-        IF @w_totalRows > 0
-        BEGIN
-            SET @o_Numero = 200;
-            SET @o_MensajeUsuario = 'ESTADOS OBTENIDOS EXITOSAMENTE';
-        END
-        ELSE
-        BEGIN
-            SET @o_Numero = 204;
-            SET @o_MensajeUsuario = 'NO HAY MAS REGISTROS PARA LISTAR';
-        END
+            SELECT
+                statusId,
+                statusName,
+                statusCreationDate,
+                statusCreatorId,
+                statusModificationDate,
+                statusModificatorId,
+                statusEnable
+            FROM [SQM_CATALOGS].[TBL_Status] (NOLOCK)
+            WHERE (@i_statusId IS NULL OR statusId = @i_statusId)
+            ORDER BY statusId
+            OFFSET (@i_PageNumber - 1) * @i_RowsPerPage ROWS
+            FETCH NEXT @i_RowsPerPage ROWS ONLY;
+
+            SET @w_totalRows = @@ROWCOUNT;
+
+            IF (@w_totalRows > 0)
+            BEGIN
+                SET @o_Numero = 200;
+                SET @o_MensajeUsuario = 'ESTADOS LISTADOS CORRECTAMENTE';
+            END
+            ELSE
+            BEGIN
+                SET @o_Numero = 204;
+                SET @o_MensajeUsuario = 'NO HAY MAS REGISTROS PARA LISTAR';
+            END
         END TRY
 
         BEGIN CATCH
             SET @o_Numero = 500;
-            SET @o_MensajeUsuario = 'ERROR AL OBTENER LOS ESTADOS';
-            SET @o_MensajeTecnico = ERROR_MESSAGE();
+            SET @o_MensajeUsuario = 'ERROR AL LISTAR ESTADOS';
+            SET @o_MensajeTecnico = CONCAT_WS(' - ', 'ERROR AL LISTAR ESTADOS', ERROR_PROCEDURE(), ERROR_LINE(), ERROR_MESSAGE());
+
         END CATCH
     END
 
-    -- ACCIÓN INVÁLIDA --
+    -- ACCION INVALIDA --
     ELSE
     BEGIN
-        SET @o_Numero = 400;
-        SET @o_MensajeUsuario = 'ACCIÓN INVÁLIDA';
+
+        SET @o_Numero = 405;
+        SET @o_MensajeUsuario = 'METODO NO HABILITADO';
+        SET @o_MensajeTecnico = 'EL PROCEDIMIENTO ALMACENADO NO TIENE HABILITADA ESA OPCION';
+
     END
 END;
 GO

@@ -18,7 +18,7 @@ END
 IF NOT EXISTS (SELECT * FROM sys.certificates WHERE name = 'CERT_SCRUMPLANNING')
 BEGIN
     CREATE CERTIFICATE CERT_SCRUMPLANNING
-    WITH SUBJECT = 'Certificado de protección para la clave simétrica';
+    WITH SUBJECT = 'Certificado de proteccion para la clave simetrica';
 END
 
 --------------------------------------
