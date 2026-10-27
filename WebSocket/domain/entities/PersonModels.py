@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-# Modelo base de personas
 class PersonBase(BaseModel):
     personId: int
     personFirstName: str
@@ -17,7 +16,6 @@ class PersonBase(BaseModel):
     personModificatorId: Optional[int] = None
     personEnable: bool
 
-# Modelo para creacion de personas
 class PersonCreate(BaseModel):
     personFirstName: str
     personSecondName: Optional[str] = None

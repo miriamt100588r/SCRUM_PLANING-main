@@ -3,21 +3,21 @@ from datetime import datetime
 from typing import Optional, List
 
 class RolesBase(BaseModel):
-	roleId: int
-	roleName: str
-	roleCreationDate: datetime
-	roleCreatorId: int
-	roleModificationDate: datetime
-	roleModificatorId: Optional[int] = None
-	roleEnable: bool
+	rolId: int
+	rolName: str
+	rolCreationDate: datetime
+	rolCreatorId: int
+	rolModificationDate: datetime
+	rolModificatorId: Optional[int] = None
+	rolEnable: bool
 
 class RolesCreate(BaseModel):
-    roleName: str
-    roleCreatorId: int
+    rolName: str
+    rolCreatorId: int
 
 class RolesUpdate(BaseModel):
-    roleId: int
-    roleName: Optional[str] = None
-    roleModificationDate: datetime
-    roleModificatorId: Optional[int] = None
-    roleEnable: Optional[bool] = None
+    rolId: int
+    rolName: Optional[str] = None
+    rolModificationDate: datetime
+    rolModificatorId: Optional[int] = None
+    rolEnable: Optional[bool] = None

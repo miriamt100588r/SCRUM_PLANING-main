@@ -19,7 +19,6 @@ class EpicsBase(BaseModel):
     epicModificatorId: Optional[int] = None
     epicStatus: int
 
-
 class EpicsCreate(BaseModel):
     epicName: str = Field(..., max_length=100)
     epicSummary: str = Field(..., max_length=500)
@@ -31,16 +30,6 @@ class EpicsCreate(BaseModel):
     epicPriority: Optional[int] = None
     epicCreatorId: int
     epicStatus: int
-
-    #Validacion para asegurar que la fecha de inicio sea menor o igual a la fecha de vencimiento
-
-    @model_validator(mode="after")
-    def check_dates(self):
-        if self.epicStartDate and self.epicDueDate:
-            if self.epicDueDate < self.epicStartDate:
-                raise ValueError("epicDueDate debe ser >= epicStartDate")
-        return self
-
 
 class EpicsUpdate(BaseModel):
     epicId: int
