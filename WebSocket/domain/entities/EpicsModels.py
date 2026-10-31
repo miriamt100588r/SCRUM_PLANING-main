@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, model_validator
 from datetime import datetime, date
-from typing import Optional
+from typing import Optional, List
 
 
 class EpicsBase(BaseModel):
@@ -44,3 +44,6 @@ class EpicsUpdate(BaseModel):
     epicModificationDate: Optional[datetime] = None
     epicModificatorId: Optional[int] = None
     epicStatus: Optional[int] = None
+
+    class LtsEpicBase(BaseModel):
+        users: List[EpicsBase]

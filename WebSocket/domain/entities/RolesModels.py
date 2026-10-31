@@ -21,3 +21,6 @@ class RolesUpdate(BaseModel):
     rolModificationDate: datetime
     rolModificatorId: Optional[int] = None
     rolEnable: Optional[bool] = None
+
+class LtsRolesBase(BaseModel):
+    users: List[RolesBase]

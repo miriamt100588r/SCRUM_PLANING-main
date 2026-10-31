@@ -21,3 +21,6 @@ class ActivityTypeUpdate(BaseModel):
         activityTypeModificationDate: Optional[datetime] = None
         activityTypeModificatorId: Optional[int] = None
         activityTypeEnable: Optional[bool] = None
+
+class LtsActivityTypeBase(BaseModel):
+    users: List[ActivityTypeBase]

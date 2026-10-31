@@ -21,3 +21,6 @@ class StatusUpdate(BaseModel):
     statusModificationDate: datetime
     statusModificatorId: Optional[int] = None
     statusEnable: Optional[bool] = None
+
+class LtsStatusBase(BaseModel):
+    users: List[StatusBase]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 class PersonBase(BaseModel):
     personId: int
@@ -23,3 +23,18 @@ class PersonCreate(BaseModel):
     personSecondSurname: Optional[str] = None
     personBirthday: datetime
     personDNI: str
+
+class PersonUpdate(BaseModel):
+    personId: int
+    personFirstName: Optional[str] = None
+    personSecondName: Optional[str] = None
+    personFirstSurname: Optional[str] = None
+    personSecondSurname: Optional[str] = None
+    personBirthday: Optional[datetime] = None
+    personDNI: Optional[str] = None
+    personModificationDate: Optional[datetime] = None
+    personModificatorId: Optional[int] = None
+    personEnable: Optional[bool] = None
+
+class LtsPersonBase(BaseModel):
+    users: List[PersonBase]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-from typing import Optional
+from typing import Optional, List
 
 
 class FeaturesBase(BaseModel):
@@ -46,3 +46,6 @@ class FeaturesUpdate(BaseModel):
     featureModificationDate: Optional[datetime] = None
     featureModificatorId: Optional[int] = None
     featureStatus: Optional[int] = None
+
+class LtsFeatureBase(BaseModel):
+    users: List[FeaturesBase]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 
 class TaskCommentsBase(BaseModel):
@@ -31,3 +31,6 @@ class TaskCommentsUpdate(BaseModel):
     taskCommentModificationDate: Optional[datetime] = None
     taskCommentModificatorId: Optional[int] = None
     taskCommentStatus: Optional[bool] = None
+
+class LtsTaskCommentsBase(BaseModel):
+    users: List[TaskCommentsBase]

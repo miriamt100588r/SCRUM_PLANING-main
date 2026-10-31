@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime, date
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, List
 
 
 class TasksBase(BaseModel):
@@ -56,3 +56,6 @@ class TasksUpdate(BaseModel):
     taskModificationDate: Optional[datetime] = None
     taskModificatorId: Optional[int] = None
     taskStatus: Optional[int] = None
+
+class LtsTasksBase(BaseModel):
+    users: List[TasksBase]

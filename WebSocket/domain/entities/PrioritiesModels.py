@@ -21,3 +21,6 @@ class PrioritiesUpdate(BaseModel):
     priorityModificationDate: Optional[datetime] = None
     priorityModificatorId: Optional[int] = None
     priorityEnable: Optional[bool] = None
+
+class LtsPrioritiesBase(BaseModel):
+    users: List[PrioritiesBase]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-from typing import Optional
+from typing import Optional, List
 
 
 class ProductBacklogItemsBase(BaseModel):
@@ -49,3 +49,6 @@ class ProductBacklogItemsUpdate(BaseModel):
     PBIModificationDate: Optional[datetime] = None
     PBIModificatorId: Optional[int] = None
     PBIStatus: Optional[int] = None
+
+class LtsProductBacklogItemsBase(BaseModel):
+    users: List[ProductBacklogItemsBase]

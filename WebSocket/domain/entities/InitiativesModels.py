@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime, date
-from typing import Optional
+from typing import Optional, List
 
 
 class InitiativesBase(BaseModel):
@@ -43,3 +43,6 @@ class InitiativesUpdate(BaseModel):
     initiativeModificationDate: Optional[datetime] = None
     initiativeModificatorId: Optional[int] = None
     initiativeStatus: Optional[int] = None
+
+    class LtsInitiativeBase(BaseModel):
+        users: List[InitiativesBase]

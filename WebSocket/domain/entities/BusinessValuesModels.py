@@ -21,3 +21,6 @@ class BusinessValuesUpdate(BaseModel):
     businessValueModificationDate: Optional[datetime] = None
     businessValueModificatorId: Optional[int] = None
     businessValueEnable: Optional[bool] = None
+
+    class LtsBusinessValuesBase(BaseModel):
+        users: List[BusinessValuesBase]
