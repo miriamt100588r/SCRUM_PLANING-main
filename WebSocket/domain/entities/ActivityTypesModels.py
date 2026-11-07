@@ -12,15 +12,12 @@ class ActivityTypeBase(BaseModel):
 	activityTypeEnable: bool
 
 class ActivityTypeCreate(BaseModel):
-        activityTypeName: str
-        activityTypeCreatorId: int
+    activityTypeName: str
 
 class ActivityTypeUpdate(BaseModel):
-        activityTypeId: int
-        activityTypeName: Optional[str] = None
-        activityTypeModificationDate: Optional[datetime] = None
-        activityTypeModificatorId: Optional[int] = None
-        activityTypeEnable: Optional[bool] = None
+    activityTypeId: int
+    activityTypeName: Optional[str] = None
+    activityTypeEnable: Optional[bool] = None
 
 class LtsActivityTypeBase(BaseModel):
     users: List[ActivityTypeBase]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from domain.entities.PersonModels import PersonCreate
-from domain.entities.UserModels import UserCreate
+from domain.entities.UsersModels import UserCreate
 
 class UserProfileCreate(BaseModel):
     personData: PersonCreate

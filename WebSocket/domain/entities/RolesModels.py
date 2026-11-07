@@ -13,13 +13,10 @@ class RolesBase(BaseModel):
 
 class RolesCreate(BaseModel):
     rolName: str
-    rolCreatorId: int
 
 class RolesUpdate(BaseModel):
     rolId: int
     rolName: Optional[str] = None
-    rolModificationDate: datetime
-    rolModificatorId: Optional[int] = None
     rolEnable: Optional[bool] = None
 
 class LtsRolesBase(BaseModel):

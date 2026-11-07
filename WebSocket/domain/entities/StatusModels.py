@@ -13,13 +13,10 @@ class StatusBase(BaseModel):
 
 class StatusCreate(BaseModel):
     statusName: str
-    statusCreatorId: int
 
 class StatusUpdate(BaseModel):
     statusId: int
     statusName: Optional[str] = None
-    statusModificationDate: datetime
-    statusModificatorId: Optional[int] = None
     statusEnable: Optional[bool] = None
 
 class LtsStatusBase(BaseModel):

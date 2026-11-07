@@ -13,13 +13,10 @@ class PrioritiesBase(BaseModel):
 
 class PrioritiesCreate(BaseModel):
     priorityName: str
-    priorityCreatorId: int
 
 class PrioritiesUpdate(BaseModel):
     priorityId: int
     priorityName: Optional[str] = None
-    priorityModificationDate: Optional[datetime] = None
-    priorityModificatorId: Optional[int] = None
     priorityEnable: Optional[bool] = None
 
 class LtsPrioritiesBase(BaseModel):

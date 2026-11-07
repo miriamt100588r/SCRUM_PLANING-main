@@ -13,13 +13,10 @@ class BusinessValuesBase(BaseModel):
 
 class BusinessValuesCreate(BaseModel):
     businessValueName: str
-    businessValueCreatorId: int
 
 class BusinessValuesUpdate(BaseModel):
     businessValueId: int
     businessValueName: Optional[str] = None
-    businessValueModificationDate: Optional[datetime] = None
-    businessValueModificatorId: Optional[int] = None
     businessValueEnable: Optional[bool] = None
 
     class LtsBusinessValuesBase(BaseModel):
